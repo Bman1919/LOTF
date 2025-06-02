@@ -70,8 +70,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('start-game', (lobbyId) => {
-        if(games[lobbyId]){socket.emit("start-game-failed"); return;}
-        io.to(lobbyId).emit('game-started');
+        if(games[lobbyId]){socket.emit("start-game-failed"); console.log("Start-game-failed"); return;}
         if(lobbies[lobbyId]){
             if(!games[lobbyId]) games[lobbyId] = {
                 players: lobbies[lobbyId],
@@ -86,6 +85,7 @@ io.on('connection', (socket) => {
                 player.resources = 0;
             }
             delete lobbies[lobbyId];
+            io.to(lobbyId).emit('game-started');
         }
     })
 })

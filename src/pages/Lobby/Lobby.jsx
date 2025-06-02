@@ -11,11 +11,25 @@ export default function Lobby(){
     const [userId, setUserId] = useState(-1);
     const [tempId, setTempId] = useState(-1);
     const navigate = useNavigate();
+    const [dotCount, setDotCount] = useState(1);
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setDotCount(prev => (prev % 3) + 1);
+      }, 500);
+      return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
       document.title = `${id} | LOTF`;
       return () => {document.title = "LOTF";}
     }, [id]);
+
+    
+    function gameStart(){
+      console.log(`to start game at ${id}`);
+      navigate(`/game/${id}`);
+    }
 
     useEffect(() => {
       console.log('Socket in Lobby: ', socket);
@@ -24,10 +38,6 @@ export default function Lobby(){
       socket.emit('join-lobby', id);
 
       socket.on('lobby-users', setUsers);
-
-      function gameStart(){
-        navigate(`/game/${id}`);
-      }
 
       socket.on('game-started',gameStart);
 
@@ -96,7 +106,7 @@ export default function Lobby(){
                       alt={character.name || "Player"}
                     />
                     <div className="character-info">
-                      <span className="character-name">{`${character.name || u.id}${(u.characterIndex === userId ? " (me)" : "")}`}</span>
+                      <span className="character-name">{`${character.name || `Player Selecting Character${'.'.repeat(dotCount)}`}${(u.characterIndex === userId ? " (me)" : "")}`}</span>
                     </div>
                   </div>
                 </li>
@@ -105,7 +115,7 @@ export default function Lobby(){
           </ul>
           <div className="lobby-buttons">
             <button className="lobby-button" onClick={() => {setUserId(-1);}}>Change</button>
-            <button className="lobby-button">Start</button>
+            <button className="lobby-button" onClick={() => {if(!socket) return; socket.emit('start-game',id); gameStart();}}>Start</button>
           </div>
         </>)
       }
