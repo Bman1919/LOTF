@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef} from 'react'
+import { createContext, useContext, useEffect, useState} from 'react'
 import {io} from 'socket.io-client'
 
 const SocketContext = createContext(null);
@@ -8,18 +8,19 @@ export function useSocket(){
 }
 
 export function SocketProvider({children}){
-    const socketRef = useRef();
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
         const PORT = 3001;
-        socketRef.current = io(`http://localhost:${PORT}`);
+        const newSocket = io(`http://localhost:${PORT}`);
+        setSocket(newSocket);
         return () => {
-            socketRef.current.disconnect();
+            newSocket.disconnect();
         };
     }, []);
 
     return (
-        <SocketContext.Provider value={socketRef.current}>
+        <SocketContext.Provider value={socket}>
             {children}
         </SocketContext.Provider>
     );

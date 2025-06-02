@@ -10,6 +10,8 @@ const io = new Server (server, {
         methods: ["GET", "POST"]
     }
 })
+const lobbies = {};
+const games = {};
 
 app.get('/', (req, res) => {
     res.send('Server is running!');
@@ -20,6 +22,71 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('User disconnected: ', socket.id);
+    })
+
+    socket.on('join-lobby', (lobbyId) => {
+        socket.join(lobbyId);
+        if(!lobbies[lobbyId]) lobbies[lobbyId] = [];
+        lobbies[lobbyId].push({
+            id: socket.id,
+            characterIndex: -1
+        });
+
+        io.to(lobbyId).emit('lobby-users', lobbies[lobbyId]);
+
+        console.log(`Joined ${lobbyId} as ${socket.id}`);
+    });
+
+    socket.on('leave-lobby', (lobbyId) => {
+        socket.leave(lobbyId);
+        if(lobbies[lobbyId]){
+            lobbies[lobbyId] = lobbies[lobbyId].filter(id => id.id !== socket.id);
+            io.to(lobbyId).emit('lobby-users', lobbies[lobbyId]);
+            // Clean up empty lobbies
+            if(lobbies[lobbyId].length === 0) delete lobbies[lobbyId];
+        }
+    });
+
+    socket.on('disconnecting', () => {
+        for(const lobbyId of socket.rooms){
+            if(lobbies[lobbyId]){
+                lobbies[lobbyId] = lobbies[lobbyId].filter(id => id.id !== socket.id);
+                io.to(lobbyId).emit('lobby-users', lobbies[lobbyId]);
+                if (lobbies[lobbyId].length === 0) delete lobbies[lobbyId];
+            }
+        }
+    })
+
+    socket.on('change-user', (cId) => {
+        for(const lobbyId of socket.rooms){
+            if(lobbies[lobbyId]){
+                const user = lobbies[lobbyId].find(u => u.id === socket.id);
+                if(user){
+                    user.characterIndex = cId;
+                    io.to(lobbyId).emit('lobby-users', lobbies[lobbyId]);
+                }
+            }
+        }
+    })
+
+    socket.on('start-game', (lobbyId) => {
+        if(games[lobbyId]){socket.emit("start-game-failed"); return;}
+        io.to(lobbyId).emit('game-started');
+        if(lobbies[lobbyId]){
+            if(!games[lobbyId]) games[lobbyId] = {
+                players: lobbies[lobbyId],
+                gameState:{
+                    isDay: true,
+                    conch: 0
+                }
+            };
+            for(const player of games[lobbyId].players){
+                player.HP = 3;
+                player.food = 0;
+                player.resources = 0;
+            }
+            delete lobbies[lobbyId];
+        }
     })
 })
 

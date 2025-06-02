@@ -1,0 +1,161 @@
+.character-box{
+    display: flex;
+    align-items: center;
+    background: #f2f4f6;
+    border: 2px solid #e0f0e0;
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+    gap: 16px;
+    min-width: 220px;
+    max-width: 350px;
+}
+
+.character-box.me{
+  border: 2.5px solid #6366f1;
+  box-shadow: 0 0 8px #6366f188;
+}
+
+.character-img{
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #e0e7ff;
+}
+
+.character-info{
+    display: flex;
+    flex-direction: column;
+}
+
+.character-name{
+    font-weight: bold;
+    color: #373737;
+}
+
+.character-shorthand{
+    font-size: 0.95em;
+    color: #6366f1;
+}
+
+
+
+.character-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 50vmin;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-card {
+  border: 2px solid #6366f1;
+  border-radius: 10px;
+  padding: 12px;
+  background: #f3f4f6;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  width: 10vmin;
+  height: 10vmin;
+}
+
+.character-card img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto 8px auto;
+    background: #e0e7ff;
+}
+
+.character-card.selected {
+  border-color: #22c55e;
+  box-shadow: 0 0 8px #22c55e55;
+}
+.character-card.taken {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.taken-label {
+  color: #ef4444;
+  font-weight: bold;
+}
+.selected-label {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+
+.character-select-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.character-profile-card {
+  flex: 1;
+  background: #f3f4f6;
+  border: 2px solid #6366f1;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 220px;
+  max-width: 350px;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.character-profile-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 16px;
+}
+
+.character-profile-shorthand {
+  color: #6366f1;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.character-profile-desc {
+  color: #444;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+
+
+.lobby-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 24px; /* Add this line for spacing */
+}
+
+.lobby-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 5vw;
+  max-width: 10vw;
+  height: 7vh;
+  border-radius: 12px;
+  border: 2px solid #6366f1; /* Use your accent color */
+  background: #fff;           /* Add a white background */
+  padding: 10%;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.lobby-button:hover{
+  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+}

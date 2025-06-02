@@ -3,61 +3,61 @@
         {
             "name": "Mary",
             "description": "This player gathers one additional food when gathering food",
-            "image": null,
+            "image": "characters/mary.png",
             "shorthand": "+1 Food"
         },
         {
             "name": "David",
             "description": "This player gathers one additional resource when gathering resources.",
-            "image": null,
+            "image": "characters/david.png",
             "shorthand": "+1 Resource"
         },
         {
             "name": "Margaret",
             "description": "This player steals one additional resource/food when stealing from another player.",
-            "image": null,
+            "image": "characters/margaret.png",
             "shorthand": "+1 Steal"
         },
         {
             "name": "John",
             "description": "This player can use one additional resource when working on projects.",
-            "image": null,
+            "image": "characters/john.png",
             "shorthand": "+1 Project Resource"
         },
         {
             "name": "Braedon",
             "description": "This player cannot gather food, but gets to steal one food from any player at the end of day.",
-            "image": null,
+            "image": "characters/braedon.png",
             "shorthand": "Steal 1 Food (No Gather)"
         },
         {
             "name": "Alan",
             "description": "This player can gift one food/resource to other players at the end of the day.",
-            "image": null,
+            "image": "characters/alan.png",
             "shorthand": "Gift 1 Food/Resource"
         },
         {
             "name": "Ari",
             "description": "This player causes the other player to lose one additional HP when attacking.",
-            "image": null,
+            "image": "characters/ari.png",
             "shorthand": "+1 Attack Damage"
         },
         {
             "name": "Peter",
             "description": "This player cannot gather resources, but gets to steal one resource from any other player at the end of the day.",
-            "image": null,
+            "image": "characters/peter.png",
             "shorthand": "Steal 1 Resource (No Gather)"
         },
         {
             "name": "Josh",
             "description": "This player can burn all resources/food from another player while stealing or attacking, this player cannot gift, or receive gifts.",
-            "image": null,
+            "image": "characters/josh.png",
             "shorthand": "Burn All (No Gift)"
         },
         {
             "name": "Kenneth",
             "description": "Cannot act during the day, but may let another player perform an additional day action at the beginning of the night, can speak regardless of if they have the conch.",
-            "image": null,
+            "image": "characters/kenneth.png",
             "shorthand": "Delegate Action (Night), Speak Always"
         }
     ]

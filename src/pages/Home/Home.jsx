@@ -4,17 +4,16 @@ import './Home.css'
 
 export default function Home() {
   const [lobby,setLobby] = useState(false);
-  const [name, setName] = useState("");
   const [joinId, setJoinId] = useState("");
   const navigate = useNavigate();
 
   function createLobby(){
     let lobbyId = generateLobbyId();
-    navigate(`/lobby/${name}/${lobbyId}`);
+    navigate(`/lobby/${lobbyId}`);
   }
 
   function joinLobby(){
-    navigate(`/lobby/${name}/${joinId}`);
+    navigate(`/lobby/${joinId}`);
   }
 
   return (
@@ -22,7 +21,7 @@ export default function Home() {
         <h1>
             Join a Lobby!
         </h1>
-        <input type="text" onChange={(e) => {setJoinId(e.target.value)}} onInput={()=>{setLobby(true)}} placeholder='ENTER THE LOBBY CODE TO JOIN' className="lobby-enter" />
+        <input type="text" onChange={(e) => setJoinId(e.target.value.toUpperCase())} onInput={()=>{setLobby(true)}} onKeyDown={e => {if(e.key === "Enter")joinLobby();}} placeholder='ENTER THE LOBBY CODE TO JOIN' className="lobby-enter" />
         <br />
         {lobby &&
         <button onClick={joinLobby}>
