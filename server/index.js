@@ -76,7 +76,7 @@ io.on('connection', (socket) => {
                 players: lobbies[lobbyId],
                 gameState:{
                     isDay: true,
-                    conch: 0
+                    conch: Math.floor(Math.random() * lobbies[lobbyId].length)
                 }
             };
             for(const player of games[lobbyId].players){
@@ -88,6 +88,12 @@ io.on('connection', (socket) => {
             io.to(lobbyId).emit('game-started');
         }
     })
+
+    socket.on('get-game-state', (lobbyId, callback) => {
+        if(games[lobbyId]){
+            callback(games[lobbyId]);
+        }
+    });
 })
 
 const PORT = 3001;
