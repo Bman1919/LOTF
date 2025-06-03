@@ -115,7 +115,9 @@ export default function Lobby(){
           </ul>
           <div className="lobby-buttons">
             <button className="lobby-button" onClick={() => {setUserId(-1);}}>Change</button>
-            <button className="lobby-button" onClick={() => {if(!socket) return; socket.emit('start-game',id); gameStart();}}>Start</button>
+            <button className="lobby-button" disabled={
+              users.some(u => u.characterIndex === -1)
+            } onClick={() => {if(!socket) return; socket.emit('start-game',id); gameStart();}}>Start</button>
           </div>
         </>)
       }

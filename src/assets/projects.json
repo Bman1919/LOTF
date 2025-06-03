@@ -1,0 +1,42 @@
+{
+  "active": [
+    {
+      "name": "Shelter",
+      "type": "active",
+      "cost": {
+        "resources": "2 * numPlayers"
+      },
+      "description": "Protects the group until a ship arrives to save them and from most weather.",
+      "effect": "Kids only cost 1 Food per Night from now on."
+    },
+    {
+      "name": "Raft",
+      "type": "active",
+      "cost": {
+        "resources": "3 * numPlayers"
+      },
+      "description": "If the group has completed this project, they may leave the island.",
+      "effect": "If they have <20 food, they starve on the trip and everyone dies. If they have 20+ food they survive until a ship runs into them."
+    }
+  ],
+  "passive": [
+    {
+      "name": "Kids",
+      "type": "passive",
+      "upkeep": {
+        "food": 2
+      },
+      "description": "Feed smaller kids who can’t help with most work.",
+      "reward": "Starter player gains either 1 food or resource (random) at End of Day."
+    },
+    {
+      "name": "Fire",
+      "type": "passive",
+      "upkeep": {
+        "resources": 1
+      },
+      "description": "Keep a fire lit to keep the group warm and cook food.",
+      "reward": "The previous starter player gains 1 food at the end of night."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+
+
+.game-button-grid{
+    display: flex;
+    flex-direction: column;
+    border-color: #222;
+    border-radius: 8px;
+}
+
+.game-button{
+    background-color: #ccc;
+    border: 2px solid #ccc;
+}
+
+.game-button-selected{
+    background-color: #999;
+}
+
+.active-project{
+    position:relative;
+    transform: translateX(10vw);
+}
+
+.project-table {
+    display: grid;
+    grid-auto-flow: column;      /* Each child is a column */
+    grid-auto-columns: 1fr;      /* Each column takes equal width */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 100vw;
+    border-radius: 8px;
+    gap: 16px;                   /* Optional: space between columns */
+}
+
+.project-column{
+    display: grid;
+    align-items: center;
+}
+
+.project-detailed{
+    right:10%;
+    top:10%;
+    position: absolute;
+}

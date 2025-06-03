@@ -83,15 +83,28 @@ io.on('connection', (socket) => {
                 player.HP = 3;
                 player.food = 0;
                 player.resources = 0;
+                player.registeredEvent = {type: "None"};
             }
             delete lobbies[lobbyId];
             io.to(lobbyId).emit('game-started');
         }
     })
 
+    socket.on('sync-event', (event, lobbyId) => {
+        if (games[lobbyId]) {
+            const player = games[lobbyId].players.find(u => u.id === socket.id);
+            if (player) {
+                player.registeredEvent = event;
+            }
+            io.to(lobbyId).emit('sync-game-state',games[lobbyId]);
+        }
+    });
+
     socket.on('get-game-state', (lobbyId, callback) => {
         if(games[lobbyId]){
             callback(games[lobbyId]);
+        }else{
+            callback(null);
         }
     });
 })
