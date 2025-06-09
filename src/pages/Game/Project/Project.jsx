@@ -1,10 +1,14 @@
 import './Project.css'
 
 export default function Project({ project }) {
+    if(!project || !project.type){
+        return null;
+    }
+
     return (
         <div className={`project-card project-${project.type}`}>
             <div className="project-title">{project.name}</div>
-            <div className="project-type">{project.type.charAt(0).toUpperCase() + project.type.slice(1)} Project</div>
+            {project.type && (<div className="project-type">{project.type.charAt(0).toUpperCase() + project.type.slice(1)}{(project.type === "passive" || project.type === "active") ? " Project" : ""}</div>)}
             <div className="project-description">{project.description}</div>
             {project.cost && (
                 <div className="project-cost">
