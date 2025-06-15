@@ -12,7 +12,7 @@ export function SocketProvider({children}){
 
     useEffect(() => {
         const PORT = 3001;
-        const newSocket = io(`http://localhost:${PORT}`);
+        const newSocket = io(`http://192.168.68.76:${PORT}`);
         setSocket(newSocket);
         return () => {
             newSocket.disconnect();

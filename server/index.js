@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server (server, {
     cors : {
-        origin: "http://localhost:5173", // React Dev Server, change later to the correct value, will figure out how to
+        origin: "*", // React Dev Server, change later to the correct value, will figure out how to
         methods: ["GET", "POST"]
     }
 })
