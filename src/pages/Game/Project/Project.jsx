@@ -1,6 +1,6 @@
 import './Project.css'
 
-export default function Project({ project }) {
+export default function Project({ project, submitEvent }) {
     if(!project || !project.type){
         return null;
     }
@@ -8,6 +8,11 @@ export default function Project({ project }) {
     return (
         <div className={`project-card project-${project.type}`}>
             <div className="project-title">{project.name}</div>
+            <button
+                className="project-submit-btn"
+                onClick={() => submitEvent && submitEvent()}
+                style={{position: 'absolute', top: 8, right: 8}}
+            >Submit</button>
             {project.type && (<div className="project-type">{project.type.charAt(0).toUpperCase() + project.type.slice(1)}{(project.type === "passive" || project.type === "active") ? " Project" : ""}</div>)}
             <div className="project-description">{project.description}</div>
             {project.cost && (

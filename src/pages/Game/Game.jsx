@@ -6,7 +6,7 @@ import './Game.css'
 import DayMenu from './DayMenu/DayMenu.jsx'
 import Project from './Project/Project.jsx'
 
-export default function Game(){
+export default function Game({playerId}){
     const [players, setPlayers] = useState([]);
     const [isDay, setIsDay] = useState(true);
     const [conch, setConch] = useState(0);
@@ -15,6 +15,10 @@ export default function Game(){
     const {id} = useParams();
     const socket = useSocket();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log(`Id: ${id}, playerId: ${playerId}`);
+    }, [id,playerId]);
 
     const [event, setEvent] = useState({
         type: "None"
@@ -74,11 +78,11 @@ export default function Game(){
                 const character = charactersData.characters?.[u.characterIndex] || {};
                 if(!u) return null;
                 return (
-                <li className={`players-row${u.registeredEvent?.type === "None" ? "" : " regEvent"}${u.id === socket.id ? " me" : ""}`} key={i}>
+                <li className={`players-row${u.registeredEvent?.type === "None" ? "" : " regEvent"}${u.characterIndex === playerId ? " me" : ""}`} key={i}>
                     <span>
                     <img src={`/${character.image}`} alt={character.name} />
                     </span>
-                    <span>{`${character.name}${(socket.id === u.id) ? " (me)" : ""}`}</span>
+                    <span>{`${character.name}${(u.characterIndex === playerId) ? " (me)" : ""}`}</span>
                     <span>{u.HP}</span>
                     <span>{u.food}</span>
                     <span>{u.resources}</span>
@@ -92,7 +96,7 @@ export default function Game(){
         <div>
             {
                 (isDay) && (
-                    <DayMenu eventHandler={setEvent} projectState={projects}/>
+                    <DayMenu eventHandler={setEvent} projectState={projects} player={charactersData.characters?.[playerId] || {}}/>
                 )
             }
         </div>

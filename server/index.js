@@ -15,6 +15,11 @@ const io = new Server (server, {
 const lobbies = {};
 const games = {};
 
+function resolveDay(lobbyID){
+    const newGames = games[lobbyID];
+    
+}
+
 app.get('/', (req, res) => {
     res.send('Server is running!');
 })

@@ -4,7 +4,7 @@ import charactersData from '../../assets/character.json';
 import {useSocket} from '../../context/SocketContext.jsx'
 import './Lobby.css'
 
-export default function Lobby(){
+export default function Lobby({ setPlayerInd }){
     const {id} = useParams();
     const socket = useSocket();
     const [users, setUsers] = useState([]);
@@ -27,9 +27,13 @@ export default function Lobby(){
 
     
     function gameStart(){
-      console.log(`to start game at ${id}`);
+      console.log(`to start game at ${id} with ${userId}`);
       navigate(`/game/${id}`);
     }
+
+    useEffect(() => {
+      setPlayerInd(userId);
+    }, [userId]);
 
     useEffect(() => {
       console.log('Socket in Lobby: ', socket);
@@ -95,7 +99,6 @@ export default function Lobby(){
           <h3>Players in this lobby:</h3>
           <ul style ={{listStyle: "none", pading: 0}}>
             {users.map((u,i) => {
-              console.log(`char index: ${u.characterIndex}`);
               const character = charactersData.characters?.[u.characterIndex] || {};
               return (
                 <li key={u.id || i}>
