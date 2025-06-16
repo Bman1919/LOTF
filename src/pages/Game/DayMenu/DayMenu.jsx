@@ -6,13 +6,12 @@ import Project from '../Project/Project.jsx'
 export default function DayMenu({eventHandler, projectState, player}){
     const [selectedProject, setSelectedProject] = useState({});
     const [selection, setSelection] = useState({});
-
-    let projectMappings = {
+    const [projectMappings, setProjectMappings] = useState({
         "Food": {
             name: "Food",
             type: "Activity",
             image: "activity/food.png",
-            description: "Spend your day gathering and hunting to acheive food",
+            description: "Spend your day gathering and hunting to achieve food",
             reward: "+2 Food"
         },
         "Resources": {
@@ -22,17 +21,27 @@ export default function DayMenu({eventHandler, projectState, player}){
             description: "Spend your day retrieving various resources",
             reward: "+2 Resources"
         }
-    }
+    });
 
     useEffect(() => {
-        if(!player.flags) return;
-        if(player.flags["extra-food"]){
-            projectMappings["Food"].reward = `+${2 + player.flags["extra-food"]} Food`;
-        }
-        if(player.flags["extra-resource"]){
-            projectMappings["Resources"].reward = `+${2+player.flags['extra-resources']} Resources`;
-        }
-    },[player.flags]);
+        if (!player.flags) return;
+        setProjectMappings(prev => {
+            const updated = { ...prev };
+            if (player.flags["extra-food"]) {
+                updated["Food"] = {
+                    ...updated["Food"],
+                    reward: `+${2 + player.flags["extra-food"]} Food`
+                };
+            }
+            if (player.flags["extra-resource"]) {
+                updated["Resources"] = {
+                    ...updated["Resources"],
+                    reward: `+${2 + player.flags["extra-resource"]} Resources`
+                };
+            }
+            return updated;
+        });
+    }, [player.flags]);
 
     function nonProjectEventHandler(event){
         setSelection(event);
@@ -87,9 +96,9 @@ export default function DayMenu({eventHandler, projectState, player}){
             }
         </div>
         <div className='project-detailed'>
-            {selectedProject && <Project className="project-detailed" project={projectMappings[selection.name] ? 
-            projectMappings[selection.name] :
-            selection.project
+            {selectedProject && <Project className="project-detailed" project={projectMappings[selection.type] ? 
+            projectMappings[selection.type] :
+            selection
             } submitEvent={() => eventHandler(selection)}/>}
         </div>
     </>);

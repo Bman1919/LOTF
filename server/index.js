@@ -92,7 +92,27 @@ io.on('connection', (socket) => {
             };
             
             for(const project of Projects.active){
-                games[lobbyId].gameState.projects.active.push(project);
+                let cost = {};
+                if(project.cost) {
+                    for(const [resource, value] of Object.entries(project.cost)){
+                        if(typeof value === "string" && value.includes("numPlayers")){
+                            const expr = value.replace(/numPlayers/g,lobbies[lobbyId].length);
+                            try{
+                                cost["resources"] = eval(expr);
+                            }catch{
+                                cost["resources"] = value;
+                            }
+                        }else{
+                            cost["resources"] = value;
+                        }
+                    }
+                }
+
+                games[lobbyId].gameState.projects.active.push({
+                    ...project,
+                    progress: 0,
+                    cost
+                });
             }
             
             for(const project of Projects.passive){
