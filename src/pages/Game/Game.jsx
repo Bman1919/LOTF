@@ -4,11 +4,13 @@ import {useSocket} from '../../context/SocketContext.jsx'
 import charactersData from '../../assets/character.json';
 import './Game.css'
 import DayMenu from './DayMenu/DayMenu.jsx'
+import Project from './Project/Project.jsx'
 
 export default function Game(){
     const [players, setPlayers] = useState([]);
     const [isDay, setIsDay] = useState(true);
     const [conch, setConch] = useState(0);
+    const [projects, setProjects] = useState([]);
 
     const {id} = useParams();
     const socket = useSocket();
@@ -24,6 +26,7 @@ export default function Game(){
         setIsDay(gameState.gameState.isDay);
         setConch(gameState.gameState.conch);
         setPlayers(gameState.players);
+        setProjects(gameState.gameState.projects);
         console.log('Synced: ',gameState);
     }
 
@@ -59,7 +62,7 @@ export default function Game(){
 
     return (<>
         <ul className="players-table">
-            <li className="players-header">
+            <li className="players-header" key={-1}>
                 <span>Avatar</span>
                 <span>Name</span>
                 <span>HP</span>
@@ -86,10 +89,12 @@ export default function Game(){
                 );
             })}
         </ul>
-        {
-            (isDay) && (
-                <DayMenu eventHandler={setEvent}/>
-            )
-        }
+        <div>
+            {
+                (isDay) && (
+                    <DayMenu eventHandler={setEvent} projectState={projects}/>
+                )
+            }
+        </div>
     </>);
 }

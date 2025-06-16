@@ -1,3 +1,5 @@
+const Projects = require('../src/assets/projects.json');
+
 const express = require('express');
 const http = require('http');
 const {Server} = require('socket.io');
@@ -76,9 +78,25 @@ io.on('connection', (socket) => {
                 players: lobbies[lobbyId],
                 gameState:{
                     isDay: true,
-                    conch: Math.floor(Math.random() * lobbies[lobbyId].length)
+                    conch: Math.floor(Math.random() * lobbies[lobbyId].length),
+                    projects: {
+                        active: [],
+                        passive: []
+                    }
                 }
             };
+            
+            for(const project of Projects.active){
+                games[lobbyId].gameState.projects.active.push(project);
+            }
+            
+            for(const project of Projects.passive){
+                games[lobbyId].gameState.projects.passive.push({
+                    ...project,
+                    isAlive: true
+                });
+            }
+
             for(const player of games[lobbyId].players){
                 player.HP = 3;
                 player.food = 0;
