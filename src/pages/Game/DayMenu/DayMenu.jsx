@@ -29,13 +29,13 @@ export default function DayMenu({eventHandler, projectState}){
             {
                 (
                     <ul className='project-table'>
-                        <li className='project-header'>
+                        <li className='project-header' key={0}>
                             <span>Project Name</span>
                             <span></span>
                         </li>
                         {
                             Projects.active.map((u, i) => (
-                                <li className="project-row" onClick={() => {setSelectedProject(u);}}><span>{u.name}</span><span><img src={`/${u.image}`}/></span></li>
+                                <li key={`active-${i}`} className="project-row" onClick={() => {setSelectedProject(u);}}><span>{u.name}</span><span><img src={`/${u.image}`}/></span></li>
                             ))
                         }
                         {
@@ -45,7 +45,7 @@ export default function DayMenu({eventHandler, projectState}){
                                     <li
                                         className={`project-row${isAlive ? "" : " dead"}`}
                                         onClick={() => { setSelectedProject(u); }}
-                                        key={i}
+                                        key={`passive-${i}`}
                                     >
                                         <span>{u.name}</span>
                                         <span><img src={`/${u.image}`} /></span>

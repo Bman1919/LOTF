@@ -62,7 +62,7 @@ export default function Game(){
 
     return (<>
         <ul className="players-table">
-            <li className="players-header">
+            <li className="players-header" key={-1}>
                 <span>Avatar</span>
                 <span>Name</span>
                 <span>HP</span>
