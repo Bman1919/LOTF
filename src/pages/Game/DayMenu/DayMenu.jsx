@@ -49,7 +49,10 @@ export default function DayMenu({eventHandler, projectState, player}){
 
     useEffect(() => {
         if(!selectedProject || !selectedProject.name) return;
-        setSelection(selectedProject);
+        setSelection({
+            ...selectedProject,
+            isProject: true
+        });
     }, [selectedProject]);
 
     if(player.flags["no-day-act"]) return <></>;
@@ -72,12 +75,12 @@ export default function DayMenu({eventHandler, projectState, player}){
                             <span></span>
                         </li>
                         {
-                            Projects.active.map((u, i) => (
+                            projectState?.active?.map((u, i) => (
                                 <li key={`active-${i}`} className="project-row" onClick={() => {setSelectedProject(u);}}><span>{u.name}</span><span><img src={`/${u.image}`}/></span></li>
                             ))
                         }
                         {
-                            Projects.passive.map((u, i) => {
+                            projectState?.passive?.map((u, i) => {
                                 const isAlive = projectState.passive && projectState.passive[i] ? projectState.passive[i].isAlive : false;
                                 return (
                                     <li
@@ -99,7 +102,11 @@ export default function DayMenu({eventHandler, projectState, player}){
             {selectedProject && <Project className="project-detailed" project={projectMappings[selection.type] ? 
             projectMappings[selection.type] :
             selection
-            } submitEvent={() => eventHandler(selection)}/>}
+            } submitEvent={() => eventHandler(selection)}
+            disabled={(function(){
+                switch(selection.type){case "Food": case "Resources": return true;}
+                return (((selection?.cost?.resources || selection?.upkeep?.resources) && (player.resources >= 1)) || ((selection?.cost?.food || selection?.upkeep?.food) && (player.food >= 1)));
+            })()}/>}
         </div>
     </>);
 }

@@ -16,8 +16,85 @@ const lobbies = {};
 const games = {};
 
 function resolveDay(lobbyID){
-    const newGames = games[lobbyID];
-    
+    const newGame = {...games[lobbyID]};
+    const animation = [];
+    for(let i = 0; i < games[lobbyID].players.length; i++){
+        let event = games[lobbyID].players[i].registeredEvent;
+        if(event.isProject){
+            let amount = 2 + (games[lobbyId].players[i].flags["extra-resource-use"] ?? 0);
+
+            switch(event.type){
+                case "active": {
+                    let project = games[lobbyID].gameState.projects.active.find(u => u.name == event.name);
+                    if(project){
+                        if(event.cost.resources){
+                            amount = min(amount, project.cost.resources - project.progress.resources,games[lobbyID].players[i].resources);
+                            games[lobbyID].players[i].resources -= amount;
+                            project.progress.resourecs += amount;
+                        }else if(event.cost.food){
+                            amount = min(amount, project.cost.food - project.progress.food,games[lobbyID].players[i].food);
+                            games[lobbyID].players[i].food -= amount;
+                            project.progress.food += amount;
+                        }
+
+                        animation.push({
+                            type: "action",
+                            project: project,
+                            player: games[lobbyID].players[i],
+                            action: "project",
+                            amount: amount
+                        });
+
+                        if(amount != 0 && !(event.cost.resources || event.cost.food)){
+                            animation.push({
+                                type: "action",
+                                project: project,
+                                player: games[lobbyID].players[i],
+                                action: "project-completition",
+                                amount: amount
+                            })
+                        }
+                    }
+                } break;
+                case "passive": {
+                    let project = games[lobbyID].gameState.projects.passive.find(u => u.name == event.name);
+                    if(project){
+                        project["this-turn-amt"] += amount;
+
+                        animation.push({
+                            type: "action",
+                            player: games[lobbyID].players[i],
+                            action: "project",
+                            amount: amount
+                        })
+                    }
+                } break;
+            }
+        }else{
+            if(event.type == "Food"){
+                let amount = 2 + (games[lobbyID].players[i].flags["extra-food"] ?? 0);
+                animation.push({
+                    type: "action",
+                    player: games[lobbyID].players[i],
+                    action: "food",
+                    amount: amount
+                });
+            }else if (event.type == "Resources"){
+                let amount = 2 + (games[lobbyID].players[i].flags["extra-resource"] ?? 0);
+                animation.push({
+                    type: "action",
+                    player: games[lobbyID].players[i],
+                    action: "resource",
+                    amount: amount
+                });
+            }
+        }
+    }
+
+    animation.push({
+        type: "time",
+        action: "nightime"
+    })
 }
 
 app.get('/', (req, res) => {
@@ -98,6 +175,8 @@ io.on('connection', (socket) => {
                         if(typeof value === "string" && value.includes("numPlayers")){
                             const expr = value.replace(/numPlayers/g,lobbies[lobbyId].length);
                             try{
+                                console.log(`Evaluating ${expr}...`);
+                                console.log(`Resulting in ${eval(expr)}`);
                                 cost["resources"] = eval(expr);
                             }catch{
                                 cost["resources"] = value;
@@ -110,7 +189,10 @@ io.on('connection', (socket) => {
 
                 games[lobbyId].gameState.projects.active.push({
                     ...project,
-                    progress: 0,
+                    progress: {
+                        "resources": 0,
+                        "food": 0
+                    },
                     cost
                 });
             }
@@ -118,7 +200,11 @@ io.on('connection', (socket) => {
             for(const project of Projects.passive){
                 games[lobbyId].gameState.projects.passive.push({
                     ...project,
-                    isAlive: true
+                    isAlive: true,
+                    "this-turn-amt": {
+                        "resources": 0,
+                        "food": 0
+                    }
                 });
             }
 
