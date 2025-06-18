@@ -22,25 +22,26 @@ function resolveDay(lobbyID){
         let event = games[lobbyID].players[i].registeredEvent;
         if(event.isProject){
             let amount = 2 + (games[lobbyId].players[i].flags["extra-resource-use"] ?? 0);
+            let player = games[lobbyID].players[i];
 
             switch(event.type){
                 case "active": {
                     let project = games[lobbyID].gameState.projects.active.find(u => u.name == event.name);
                     if(project){
                         if(event.cost.resources){
-                            amount = min(amount, project.cost.resources - project.progress.resources,games[lobbyID].players[i].resources);
-                            games[lobbyID].players[i].resources -= amount;
+                            amount = min(amount, project.cost.resources - project.progress.resources,player.resources);
+                            player.resources -= amount;
                             project.progress.resourecs += amount;
                         }else if(event.cost.food){
-                            amount = min(amount, project.cost.food - project.progress.food,games[lobbyID].players[i].food);
-                            games[lobbyID].players[i].food -= amount;
+                            amount = min(amount, project.cost.food - project.progress.food,player.food);
+                            player.food -= amount;
                             project.progress.food += amount;
                         }
 
                         animation.push({
                             type: "action",
                             project: project,
-                            player: games[lobbyID].players[i],
+                            player: player,
                             action: "project",
                             amount: amount
                         });
@@ -49,7 +50,7 @@ function resolveDay(lobbyID){
                             animation.push({
                                 type: "action",
                                 project: project,
-                                player: games[lobbyID].players[i],
+                                player: player,
                                 action: "project-completition",
                                 amount: amount
                             })
@@ -59,11 +60,15 @@ function resolveDay(lobbyID){
                 case "passive": {
                     let project = games[lobbyID].gameState.projects.passive.find(u => u.name == event.name);
                     if(project){
+                        if(event.upkeep.resources){
+                            amount = min(amount, player.resources);
+                            
+                        }
                         project["this-turn-amt"] += amount;
 
                         animation.push({
                             type: "action",
-                            player: games[lobbyID].players[i],
+                            player: player,
                             action: "project",
                             amount: amount
                         })
