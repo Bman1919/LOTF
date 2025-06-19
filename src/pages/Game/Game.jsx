@@ -12,6 +12,8 @@ export default function Game({playerId}){
     const [conch, setConch] = useState(0);
     const [projects, setProjects] = useState([]);
 
+    const [anim, setAnim] = useState(<></>);
+
     const {id} = useParams();
     const socket = useSocket();
     const navigate = useNavigate();
@@ -48,6 +50,41 @@ export default function Game({playerId}){
             socket.off('sync-game-state',syncGameState);
         }
     }, [socket, id]);
+
+    useEffect(() => {
+        if(!socket) return () => {};
+        let handleAnimation = async (seq) => {
+            console.log("Animate request hit here");
+            for(let scene of seq){
+                switch(scene.type){
+                    case "action": {
+                        let player = scene.player;
+                        switch(scene.action){
+                            case "project": {
+                                let project = scene.project;
+                                setAnim(<div>{player.name} gives {scene.amount} to {project.name}</div>);
+                                await delay(1000);
+                            } break;
+                            case "food": break;
+                            case "resources": break;
+                        }
+                    } break;
+                    case "project":{
+                    }break;
+                    case "time":{
+                        if(scene.action === "nightime")
+                            setIsDay(false);
+                    }break;
+                }
+            }
+
+            setAnim(<></>);
+        };
+        socket.on("animate", handleAnimation);
+        return () =>{
+            socket.off("animate", handleAnimation);
+        }
+    }, [socket]);
 
     useEffect(() => {
         document.body.style.backgroundColor = isDay ?  "#f3e9e2" : "#322f2f";
@@ -100,5 +137,10 @@ export default function Game({playerId}){
                 )
             }
         </div>
+        {anim}
     </>);
+}
+
+function delay(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

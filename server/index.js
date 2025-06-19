@@ -16,24 +16,24 @@ const lobbies = {};
 const games = {};
 
 function resolveDay(lobbyID){
-    const newGame = {...games[lobbyID]};
     const animation = [];
     for(let i = 0; i < games[lobbyID].players.length; i++){
         let event = games[lobbyID].players[i].registeredEvent;
+        let player = games[lobbyID].players[i];
+
         if(event.isProject){
-            let amount = 2 + (games[lobbyId].players[i].flags["extra-resource-use"] ?? 0);
-            let player = games[lobbyID].players[i];
+            let amount = 2 + (games[lobbyID].players[i].flags?.["extra-resource-use"] ?? 0);
 
             switch(event.type){
                 case "active": {
                     let project = games[lobbyID].gameState.projects.active.find(u => u.name == event.name);
                     if(project){
                         if(event.cost.resources){
-                            amount = min(amount, project.cost.resources - project.progress.resources,player.resources);
+                            amount = Math.min(amount, project.cost.resources - project.progress.resources,player.resources);
                             player.resources -= amount;
-                            project.progress.resourecs += amount;
+                            project.progress.resources += amount;
                         }else if(event.cost.food){
-                            amount = min(amount, project.cost.food - project.progress.food,player.food);
+                            amount = Math.min(amount, project.cost.food - project.progress.food,player.food);
                             player.food -= amount;
                             project.progress.food += amount;
                         }
@@ -46,7 +46,7 @@ function resolveDay(lobbyID){
                             amount: amount
                         });
 
-                        if(amount != 0 && !(event.cost.resources || event.cost.food)){
+                        if(amount != 0 && !((project.cost.resources && (project.cost.resources - project.progress.resources <= 0)) || (project.cost.food && (project.cost.food - project.progress.food <= 0)))){
                             animation.push({
                                 type: "action",
                                 project: project,
@@ -61,10 +61,15 @@ function resolveDay(lobbyID){
                     let project = games[lobbyID].gameState.projects.passive.find(u => u.name == event.name);
                     if(project){
                         if(event.upkeep.resources){
-                            amount = min(amount, player.resources);
-                            
+                            amount = Math.min(amount, player.resources);
+                            player.resources -= amount;
+                            project["this-turn-amt"].resources += amount;
                         }
-                        project["this-turn-amt"] += amount;
+                        if(event.upkeep.food){
+                            amount = Math.min(amount, player.food);
+                            player.food -= amount;
+                            project["this-turn-amt"].food += amount;
+                        }
 
                         animation.push({
                             type: "action",
@@ -77,7 +82,9 @@ function resolveDay(lobbyID){
             }
         }else{
             if(event.type == "Food"){
-                let amount = 2 + (games[lobbyID].players[i].flags["extra-food"] ?? 0);
+                let amount = 2 + (games[lobbyID].players[i].flags?.["extra-food"] ?? 0);
+                player.food += amount;
+
                 animation.push({
                     type: "action",
                     player: games[lobbyID].players[i],
@@ -85,7 +92,9 @@ function resolveDay(lobbyID){
                     amount: amount
                 });
             }else if (event.type == "Resources"){
-                let amount = 2 + (games[lobbyID].players[i].flags["extra-resource"] ?? 0);
+                let amount = 2 + (games[lobbyID].players[i].flags?.["extra-resource"] ?? 0);
+                player.resources += amount;
+
                 animation.push({
                     type: "action",
                     player: games[lobbyID].players[i],
@@ -94,12 +103,36 @@ function resolveDay(lobbyID){
                 });
             }
         }
+        player.registeredEvent = null;
+    }
+
+    {
+        let passiveProjs = games[lobbyID].gameState.projects.passive;
+        for(let i = passiveProjs.length - 1; i >= 0; i--){
+            let proj = passiveProjs[i];
+            if((proj.upkeep.food && (proj.upkeep.food > proj["this-turn-amt"].food)) || (proj.upkeep.resources && (proj.upkeep.resources > proj["this-turn-amt"].resources))){
+                proj.isAlive = false;
+                animation.push({
+                    type: "project",
+                    project: proj,
+                    event: "died"
+                });
+            }
+            if(!proj.isAlive){
+                passiveProjs.splice(i,1);
+                break;
+            }
+        }
     }
 
     animation.push({
         type: "time",
         action: "nightime"
     })
+
+    console.log("Emitting Animate");
+    console.log("Sockets in room", lobbyID, Array.from(io.sockets.adapter.rooms.get(lobbyID) || []));
+    io.to(lobbyID).emit("animate",animation);
 }
 
 app.get('/', (req, res) => {
@@ -219,7 +252,6 @@ io.on('connection', (socket) => {
                 player.resources = 0;
                 player.registeredEvent = {type: "None"};
             }
-            delete lobbies[lobbyId];
             io.to(lobbyId).emit('game-started');
         }
     })
@@ -231,6 +263,9 @@ io.on('connection', (socket) => {
                 player.registeredEvent = event;
             }
             io.to(lobbyId).emit('sync-game-state',games[lobbyId]);
+            if(games[lobbyId].players.every((p) => (p.registeredEvent?.type !== "None"))){
+                resolveDay(lobbyId);
+            }
         }
     });
 
